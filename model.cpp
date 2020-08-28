@@ -92,23 +92,25 @@ QVariant Model::data(const QModelIndex &index, int role) const
     } else if (role == Qt::BackgroundRole) {
         switch (col) {
         case 1:
-            if (infos[row].names[infos[row].color].isEmpty()) return QBrush(QColor(Qt::gray));
+            if (infor.names[infos[row].color].isEmpty()) return QBrush(QColor(Qt::gray));
             else return infos[row].brush(infos[row].color);
         case 2:
-            if (infos[row].names[infos[row].color ^ 2].isEmpty()) return QBrush(QColor(Qt::gray));
+            if (infor.names[infos[row].color ^ 2].isEmpty()) return QBrush(QColor(Qt::gray));
             else return infos[row].brush(infos[row].color ^ 2);
         case 3:
-            if (infos[row].names[(infos[row].color + 1) % 4].isEmpty()) return QBrush(QColor(Qt::gray));
+            if (infor.names[(infos[row].color + 1) % 4].isEmpty()) return QBrush(QColor(Qt::gray));
             else return infos[row].brush((infos[row].color + 1) % 4);
         case 4:
-            if (infos[row].names[(infos[row].color + 3) % 4].isEmpty()) return QBrush(QColor(Qt::gray));
+            if (infor.names[(infos[row].color + 3) % 4].isEmpty()) return QBrush(QColor(Qt::gray));
             else return infos[row].brush((infos[row].color + 3) % 4);
         }
     } else if (role == Qt::ForegroundRole) {
         if (col >= 1 && col <= 4) {
             return QBrush(QColor(Qt::white));
-        } else {
-            return QVariant();
+        } else if (col == 6) {
+            if (infor.result == Info::Win) return QBrush(QColor(Qt::darkGreen));
+            else if (infor.result == Info::Tie) return QBrush(QColor(Qt::darkGray));
+            else if (infor.result == Info::Lose) return QBrush(QColor(Qt::red));
         }
     }
     return QVariant();

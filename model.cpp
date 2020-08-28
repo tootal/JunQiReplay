@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include <QDataStream>
 #include <QTextCodec>
+#include <QDesktopServices>
+#include <QUrl>
 
 Model::Model(QString path, QObject *parent) 
     : QAbstractTableModel(parent)
@@ -137,4 +139,10 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
         }
     }
     return QVariant();
+}
+
+void Model::openReplay(const QModelIndex &index)
+{
+    auto path = infoList[index.row()].absoluteFilePath();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }

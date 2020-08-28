@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     model = new Model(path, this);
     ui->tableView->setModel(model);
     ui->tableView->resizeColumnsToContents();
+    connect(ui->tableView, &QTableView::doubleClicked,
+            model, &Model::openReplay);
 }
 
 MainWindow::~MainWindow()

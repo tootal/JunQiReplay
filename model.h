@@ -18,13 +18,13 @@ struct Info {
     QBrush brush(int x) const {
         switch (x) {
         case Yellow:
-            return QBrush(QColor(Qt::yellow));
+            return QBrush(QColor(216, 108, 0));
         case Blue:
-            return QBrush(QColor(Qt::blue));
+            return QBrush(QColor(40, 104, 160));
         case Green:
-            return QBrush(QColor(Qt::green));
+            return QBrush(QColor(115, 158, 5));
         case Purple:
-            return QBrush(QColor(Qt::magenta));
+            return QBrush(QColor(144, 68, 160));
         }   
     }
     int steps;

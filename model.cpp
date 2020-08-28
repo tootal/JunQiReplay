@@ -28,7 +28,7 @@ Model::Model(QString path, QObject *parent)
         for (int j = 0; j < 4; j++) {
             int color = (quint8)bytes[pos];
             if (color != 0xff) {
-                auto name = bytes.mid(0x28, 20);
+                auto name = bytes.mid(pos + 8, 20);
                 infos[i].names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
             }
             pos += 88;
@@ -70,7 +70,23 @@ QVariant Model::data(const QModelIndex &index, int role) const
     } else if (role == Qt::BackgroundRole) {
         switch (col) {
         case 1:
-            return infos[row].brush();
+            if (infos[row].names[infos[row].color].isEmpty()) return QBrush(QColor(Qt::gray));
+            else return infos[row].brush(infos[row].color);
+        case 2:
+            if (infos[row].names[infos[row].color ^ 2].isEmpty()) return QBrush(QColor(Qt::gray));
+            else return infos[row].brush(infos[row].color ^ 2);
+        case 3:
+            if (infos[row].names[(infos[row].color + 1) % 4].isEmpty()) return QBrush(QColor(Qt::gray));
+            else return infos[row].brush((infos[row].color + 1) % 4);
+        case 4:
+            if (infos[row].names[(infos[row].color + 3) % 4].isEmpty()) return QBrush(QColor(Qt::gray));
+            else return infos[row].brush((infos[row].color + 3) % 4);
+        }
+    } else if (role == Qt::ForegroundRole) {
+        if (col >= 1 && col <= 4) {
+            return QBrush(QColor(Qt::white));
+        } else {
+            return QVariant();
         }
     }
     return QVariant();

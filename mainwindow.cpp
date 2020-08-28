@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QSettings>
+#include <QSortFilterProxyModel>
 
 #include "model.h"
 
@@ -18,7 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
         ui->lineEdit->setText(path);
     }
     model = new Model(path, this);
-    ui->tableView->setModel(model);
+    auto proxy = new QSortFilterProxyModel(this);
+    proxy->setSourceModel(model);
+    ui->tableView->setModel(proxy);
     ui->tableView->resizeColumnsToContents();
     connect(ui->tableView, &QTableView::doubleClicked,
             model, &Model::openReplay);

@@ -19,6 +19,8 @@ Model::Model(QString path, QObject *parent)
     infos.resize(infoList.size());
     for (int i = 0; i < infoList.size(); i++) {
         auto info = infoList[i];
+        infos[i].filePath = info.absoluteFilePath();
+        infos[i].time = info.fileTime(QFileDevice::FileModificationTime);
         QFile file(info.absoluteFilePath());
         file.open(QFile::ReadOnly);
         auto bytes = file.readAll();
@@ -73,7 +75,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         switch (col) {
         case 0: // Time
-            return infoList[row].fileTime(QFileDevice::FileModificationTime).toString("yyyy/MM.dd hh:mm:ss");
+            return infor.time.toString("yyyy/MM.dd hh:mm:ss");
         case 1: // This
             return infor.names[infos[row].color];
         case 2: // That
@@ -143,6 +145,30 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 
 void Model::openReplay(const QModelIndex &index)
 {
-    auto path = infoList[index.row()].absoluteFilePath();
-    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(
+        infos[index.row()].filePath));
+}
+
+void Model::sort(int column, Qt::SortOrder order)
+{
+    switch (column) {
+    case 0: // Time
+        std::sort(infos.begin(), infos.end(), 
+                  [order](const Info &x, const Info &y) {
+            if (order == Qt::AscendingOrder) return x.time < y.time;
+            else return x.time > y.time;
+        });
+        emit dataChanged(index(0, 0),
+                         index(rowCount() - 1, columnCount() - 1));
+        return ;
+    case 5: // Steps
+        std::sort(infos.begin(), infos.end(), 
+                  [order](const Info &x, const Info &y) {
+            if (order == Qt::AscendingOrder) return x.steps < y.steps;
+            else return x.steps > y.steps;
+        });
+        emit dataChanged(index(0, 0),
+                         index(rowCount() - 1, columnCount() - 1));
+        return ;
+    }
 }

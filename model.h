@@ -3,6 +3,7 @@
 #include <QAbstractTableModel>
 #include <QFileInfoList>
 #include <QBrush>
+#include <QDateTime>
 
 struct Info {
     enum Color {
@@ -30,11 +31,15 @@ struct Info {
             return QBrush(QColor(115, 158, 5));
         case Purple:
             return QBrush(QColor(144, 68, 160));
+        default:
+            return QBrush();
         }   
     }
+    QDateTime time;
     int steps;
     QString names[4];
     int result;
+    QString filePath;
 };
 
 class Model : public QAbstractTableModel
@@ -47,6 +52,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     void openReplay(const QModelIndex &index);
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 private:
     QFileInfoList infoList;
     QVector<Info> infos;

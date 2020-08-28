@@ -13,7 +13,10 @@ struct Info {
     };
     int color;
     QBrush brush() const {
-        switch (color) {
+        return brush(color);
+    }
+    QBrush brush(int x) const {
+        switch (x) {
         case Yellow:
             return QBrush(QColor(Qt::yellow));
         case Blue:
@@ -25,6 +28,7 @@ struct Info {
         }   
     }
     int steps;
+    QString names[4];
 };
 
 class Model : public QAbstractTableModel

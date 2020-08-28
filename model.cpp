@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QDataStream>
+#include <QTextCodec>
 
 Model::Model(QString path, QObject *parent) 
     : QAbstractTableModel(parent)
@@ -23,6 +24,15 @@ Model::Model(QString path, QObject *parent)
         infos[i].color = bytes[0x0f];
         // little endian
         infos[i].steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
+        int pos = 0x20;
+        for (int j = 0; j < 4; j++) {
+            int color = (quint8)bytes[pos];
+            if (color != 0xff) {
+                auto name = bytes.mid(0x28, 20);
+                infos[i].names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
+            }
+            pos += 88;
+        }
     }
 }
 
@@ -42,11 +52,17 @@ QVariant Model::data(const QModelIndex &index, int role) const
     int col = index.column();
     if (role == Qt::DisplayRole) {
         switch (col) {
-        case 0:
+        case 0: // Time
             return infoList[row].fileTime(QFileDevice::FileModificationTime).toString("yyyy/MM.dd hh:mm:ss");
-        case 1:
-            return infos[row].color;
-        case 5:
+        case 1: // This
+            return infos[row].names[infos[row].color];
+        case 2: // That
+            return infos[row].names[infos[row].color ^ 2];
+        case 3: // Previous
+            return infos[row].names[(infos[row].color + 1) % 4];
+        case 4: // Next
+            return infos[row].names[(infos[row].color + 3) % 4];
+        case 5: // Steps
             return infos[row].steps;
         default:
             return QVariant();

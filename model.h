@@ -11,6 +11,11 @@ struct Info {
         Green,
         Purple
     };
+    enum Result {
+        Win,
+        Lose,
+        Tie
+    };
     int color;
     QBrush brush() const {
         return brush(color);
@@ -29,6 +34,7 @@ struct Info {
     }
     int steps;
     QString names[4];
+    int result;
 };
 
 class Model : public QAbstractTableModel

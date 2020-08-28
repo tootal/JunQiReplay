@@ -21,17 +21,34 @@ Model::Model(QString path, QObject *parent)
         file.open(QFile::ReadOnly);
         auto bytes = file.readAll();
         file.close();
-        infos[i].color = bytes[0x0f];
+        int color = bytes[0x0f];
+        infos[i].color = color;
         // little endian
-        infos[i].steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
+        int steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
+        infos[i].steps = steps;
         int pos = 0x20;
+        int type = 0;
         for (int j = 0; j < 4; j++) {
             int color = (quint8)bytes[pos];
             if (color != 0xff) {
+                type++;
                 auto name = bytes.mid(pos + 8, 20);
                 infos[i].names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
             }
             pos += 88;
+        }
+        int flag = (quint8)bytes[0x19c + 10 * (steps - 1) + 3];
+        if (flag == 2) infos[i].result = Info::Tie;
+        else {
+            int lose_color = (quint8)bytes[0x19c + 10 * (steps - 2) + 2];
+            if (type == 2) {
+                if (color == lose_color) infos[i].result = Info::Lose;
+                else infos[i].result = Info::Win;
+            } else {
+                if (color == lose_color || color == (lose_color ^ 2))
+                    infos[i].result = Info::Lose;
+                else infos[i].result = Info::Win;
+            }
         }
     }
 }
@@ -50,20 +67,25 @@ QVariant Model::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     int col = index.column();
+    Info infor = infos[row];
     if (role == Qt::DisplayRole) {
         switch (col) {
         case 0: // Time
             return infoList[row].fileTime(QFileDevice::FileModificationTime).toString("yyyy/MM.dd hh:mm:ss");
         case 1: // This
-            return infos[row].names[infos[row].color];
+            return infor.names[infos[row].color];
         case 2: // That
-            return infos[row].names[infos[row].color ^ 2];
+            return infor.names[infos[row].color ^ 2];
         case 3: // Previous
-            return infos[row].names[(infos[row].color + 1) % 4];
+            return infor.names[(infos[row].color + 1) % 4];
         case 4: // Next
-            return infos[row].names[(infos[row].color + 3) % 4];
+            return infor.names[(infos[row].color + 3) % 4];
         case 5: // Steps
-            return infos[row].steps;
+            return infor.steps;
+        case 6: // Result
+            if (infor.result == Info::Win) return tr("Win");
+            else if (infor.result == Info::Tie) return tr("Tie");
+            else if (infor.result == Info::Lose) return tr("Lose");
         default:
             return QVariant();
         }

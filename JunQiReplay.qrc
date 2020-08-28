@@ -3,5 +3,6 @@
         <file>JunQiReplay.ico</file>
         <file>JunQiReplay.png</file>
         <file>refresh.png</file>
+        <file>JunQiReplay_zh_CN.qm</file>
     </qresource>
 </RCC>

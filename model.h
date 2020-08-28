@@ -47,12 +47,14 @@ class Model : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit Model(QString path, QObject *parent = nullptr);
+    void openReplay(const QModelIndex &index);
+    
+protected:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    void openReplay(const QModelIndex &index);
-    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+
 private:
     QFileInfoList infoList;
     QVector<Info> infos;

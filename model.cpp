@@ -148,27 +148,3 @@ void Model::openReplay(const QModelIndex &index)
     QDesktopServices::openUrl(QUrl::fromLocalFile(
         infos[index.row()].filePath));
 }
-
-void Model::sort(int column, Qt::SortOrder order)
-{
-    switch (column) {
-    case 0: // Time
-        std::sort(infos.begin(), infos.end(), 
-                  [order](const Info &x, const Info &y) {
-            if (order == Qt::AscendingOrder) return x.time < y.time;
-            else return x.time > y.time;
-        });
-        emit dataChanged(index(0, 0),
-                         index(rowCount() - 1, columnCount() - 1));
-        return ;
-    case 5: // Steps
-        std::sort(infos.begin(), infos.end(), 
-                  [order](const Info &x, const Info &y) {
-            if (order == Qt::AscendingOrder) return x.steps < y.steps;
-            else return x.steps > y.steps;
-        });
-        emit dataChanged(index(0, 0),
-                         index(rowCount() - 1, columnCount() - 1));
-        return ;
-    }
-}

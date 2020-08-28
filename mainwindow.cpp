@@ -25,7 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableView->setModel(proxy);
     ui->tableView->resizeColumnsToContents();
     connect(ui->tableView, &QTableView::doubleClicked,
-            model, &Model::openReplay);
+            this, [this, proxy](const QModelIndex &index) {
+        model->openReplay(proxy->mapToSource(index));
+    });
     connect(ui->lineEdit_2, &QLineEdit::textChanged,
             proxy, &Proxy::setFilterFixedString);
 }

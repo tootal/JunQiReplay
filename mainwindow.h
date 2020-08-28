@@ -19,7 +19,13 @@ public:
 private slots:
     void on_action_Open_Folder_triggered();
     
+    void on_pushButton_clicked();
+    
+    void on_lineEdit_returnPressed();
+    
 private:
     Ui::MainWindow *ui;
     Model *model;
+    
+    void reload();
 };

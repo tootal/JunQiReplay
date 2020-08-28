@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QSortFilterProxyModel>
+#include <QDebug>
 
 #include "model.h"
 #include "proxy.h"
@@ -42,7 +43,28 @@ void MainWindow::on_action_Open_Folder_triggered()
 {
     auto path = QFileDialog::getExistingDirectory(this);
     if (path.isEmpty()) return ;
+    ui->lineEdit->setText(path);
+    reload();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    reload();
+}
+
+void MainWindow::reload()
+{
+    auto path = ui->lineEdit->text();
     QSettings settings;
     settings.setValue("path", path);
-    ui->lineEdit->setText(path);
+    model->reload(path);
+    ui->tableView->clearSelection();
+    ui->tableView->clearSpans();
+    ui->tableView->setModel(model);
+    ui->tableView->resizeColumnsToContents();
+}
+
+void MainWindow::on_lineEdit_returnPressed()
+{
+    reload();
 }

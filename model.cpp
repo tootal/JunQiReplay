@@ -11,55 +11,12 @@
 Model::Model(QString path, QObject *parent) 
     : QAbstractTableModel(parent)
 {
-    if (path.isEmpty()) return ;
-    QDir dir(path);
-    dir.setNameFilters({"*.jgs"});
-    dir.setSorting(QDir::Time);
-    infoList = dir.entryInfoList();
-    infos.resize(infoList.size());
-    for (int i = 0; i < infoList.size(); i++) {
-        auto info = infoList[i];
-        infos[i].filePath = info.absoluteFilePath();
-        infos[i].time = info.fileTime(QFileDevice::FileModificationTime);
-        QFile file(info.absoluteFilePath());
-        file.open(QFile::ReadOnly);
-        auto bytes = file.readAll();
-        file.close();
-        int color = bytes[0x0f];
-        infos[i].color = color;
-        // little endian
-        int steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
-        infos[i].steps = steps;
-        int pos = 0x20;
-        int type = 0;
-        for (int j = 0; j < 4; j++) {
-            int color = (quint8)bytes[pos];
-            if (color != 0xff) {
-                type++;
-                auto name = bytes.mid(pos + 8, 20);
-                infos[i].names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
-            }
-            pos += 88;
-        }
-        int flag = (quint8)bytes[0x19c + 10 * (steps - 1) + 3];
-        if (flag == 2) infos[i].result = Info::Tie;
-        else {
-            int lose_color = (quint8)bytes[0x19c + 10 * (steps - 2) + 2];
-            if (type == 2) {
-                if (color == lose_color) infos[i].result = Info::Lose;
-                else infos[i].result = Info::Win;
-            } else {
-                if (color == lose_color || color == (lose_color ^ 2))
-                    infos[i].result = Info::Lose;
-                else infos[i].result = Info::Win;
-            }
-        }
-    }
+    reload(path, false);
 }
 
 int Model::rowCount(const QModelIndex &) const
 {
-    return infoList.size();
+    return infos.size();
 }
 
 int Model::columnCount(const QModelIndex &) const
@@ -146,5 +103,56 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 void Model::openReplay(const QModelIndex &index)
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(
-        infos[index.row()].filePath));
+                                  infos[index.row()].filePath));
+}
+
+void Model::reload(QString path, bool notification)
+{
+    if (path.isEmpty()) return ;
+    QDir dir(path);
+    dir.setNameFilters({"*.jgs"});
+    dir.setSorting(QDir::Time);
+    auto infoList = dir.entryInfoList();
+    infos.resize(infoList.size());
+    for (int i = 0; i < infoList.size(); i++) {
+        auto info = infoList[i];
+        infos[i].filePath = info.absoluteFilePath();
+        infos[i].time = info.fileTime(QFileDevice::FileModificationTime);
+        QFile file(info.absoluteFilePath());
+        file.open(QFile::ReadOnly);
+        auto bytes = file.readAll();
+        file.close();
+        int color = bytes[0x0f];
+        infos[i].color = color;
+        // little endian
+        int steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
+        infos[i].steps = steps;
+        int pos = 0x20;
+        int type = 0;
+        for (int j = 0; j < 4; j++) {
+            int color = (quint8)bytes[pos];
+            if (color != 0xff) {
+                type++;
+                auto name = bytes.mid(pos + 8, 20);
+                infos[i].names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
+            }
+            pos += 88;
+        }
+        int flag = (quint8)bytes[0x19c + 10 * (steps - 1) + 3];
+        if (flag == 2) infos[i].result = Info::Tie;
+        else {
+            int lose_color = (quint8)bytes[0x19c + 10 * (steps - 2) + 2];
+            if (type == 2) {
+                if (color == lose_color) infos[i].result = Info::Lose;
+                else infos[i].result = Info::Win;
+            } else {
+                if (color == lose_color || color == (lose_color ^ 2))
+                    infos[i].result = Info::Lose;
+                else infos[i].result = Info::Win;
+            }
+        }
+    }
+    if (notification) 
+        emit dataChanged(index(0, 0),
+                         index(rowCount() - 1, columnCount() - 1));
 }

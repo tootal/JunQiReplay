@@ -48,6 +48,7 @@ class Model : public QAbstractTableModel
 public:
     explicit Model(QString path, QObject *parent = nullptr);
     void openReplay(const QModelIndex &index);
+    void reload(QString path, bool notification = true);
     
 protected:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -56,7 +57,6 @@ protected:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 private:
-    QFileInfoList infoList;
     QVector<Info> infos;
 };
 

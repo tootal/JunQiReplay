@@ -11,7 +11,12 @@ int main(int argc, char *argv[])
     QString locale = QLocale::system().name();
     QLocale::setDefault(QLocale(locale));
     QTranslator translator;
-    translator.load("JunQiReplay_" + locale, ":/");
+    {
+        auto loaded = translator.load("JunQiReplay_" + locale, ":/");
+        if (!loaded) {
+            qWarning() << "Translator load failed";
+        }
+    }
     a.installTranslator(&translator);
     MainWindow w;
     w.show();

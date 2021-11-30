@@ -13,8 +13,8 @@ bool Proxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) c
     QModelIndex index3 = sourceModel()->index(source_row, 3, source_parent);
     QModelIndex index4 = sourceModel()->index(source_row, 4, source_parent);
 
-    return sourceModel()->data(index1).toString().contains(filterRegExp())
-        || sourceModel()->data(index2).toString().contains(filterRegExp())
-        || sourceModel()->data(index3).toString().contains(filterRegExp())
-        || sourceModel()->data(index4).toString().contains(filterRegExp());
+    return sourceModel()->data(index1).toString().contains(filterRegularExpression())
+        || sourceModel()->data(index2).toString().contains(filterRegularExpression())
+        || sourceModel()->data(index3).toString().contains(filterRegularExpression())
+        || sourceModel()->data(index4).toString().contains(filterRegularExpression());
 }

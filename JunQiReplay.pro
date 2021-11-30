@@ -22,12 +22,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
-    proxy.cpp
+    proxy.cpp \
+    replay.cpp
 
 HEADERS += \
     mainwindow.h \
     model.h \
-    proxy.h
+    proxy.h \
+    replay.h
 
 FORMS += \
     mainwindow.ui

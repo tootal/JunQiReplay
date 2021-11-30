@@ -5,42 +5,7 @@
 #include <QBrush>
 #include <QDateTime>
 
-struct Info {
-    enum Color {
-        Yellow,
-        Blue,
-        Green,
-        Purple
-    };
-    enum Result {
-        Win,
-        Lose,
-        Tie
-    };
-    int color;
-    QBrush brush() const {
-        return brush(color);
-    }
-    QBrush brush(int x) const {
-        switch (x) {
-        case Yellow:
-            return QBrush(QColor(216, 108, 0));
-        case Blue:
-            return QBrush(QColor(40, 104, 160));
-        case Green:
-            return QBrush(QColor(115, 158, 5));
-        case Purple:
-            return QBrush(QColor(144, 68, 160));
-        default:
-            return QBrush();
-        }   
-    }
-    QDateTime time;
-    int steps;
-    QString names[4];
-    int result;
-    QString filePath;
-};
+#include "replay.h"
 
 class Model : public QAbstractTableModel
 {
@@ -57,6 +22,6 @@ protected:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 private:
-    QVector<Info> infos;
+    QVector<Replay> replays;
 };
 

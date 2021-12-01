@@ -107,44 +107,13 @@ void Model::reload(QString path, bool notification)
     dir.setNameFilters({"*.jgs"});
     dir.setSorting(QDir::Time);
     auto infoList = dir.entryInfoList();
-    replays.resize(infoList.size());
     for (int i = 0; i < infoList.size(); i++) {
-        auto info = infoList[i];
-        replays[i].filePath = info.absoluteFilePath();
-        replays[i].time = info.fileTime(QFileDevice::FileModificationTime);
-        QFile file(info.absoluteFilePath());
-        file.open(QFile::ReadOnly);
-        auto bytes = file.readAll();
-        file.close();
-        int color = bytes[0x0f];
-        replays[i].color = static_cast<Replay::Color>(color);
-        // little endian
-        int steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
-        replays[i].steps = steps;
-        int pos = 0x20;
-        int type = 0;
-        for (int j = 0; j < 4; j++) {
-            int color = (quint8)bytes[pos];
-            if (color != 0xff) {
-                type++;
-                auto name = bytes.mid(pos + 8, 20);
-                replays[i].names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
-            }
-            pos += 88;
+        auto replay = Replay::fromJGSFile(infoList[i].absoluteFilePath());
+        if (replay.hasError()) {
+            qWarning() << "replay load failed: " << replay.errorString;
+            continue;
         }
-        int flag = (quint8)bytes[0x19c + 10 * (steps - 1) + 3];
-        if (flag == 2) replays[i].result = Replay::Result::Tie;
-        else {
-            int lose_color = (quint8)bytes[0x19c + 10 * (steps - 2) + 2];
-            if (type == 2) {
-                if (color == lose_color) replays[i].result = Replay::Result::Lose;
-                else replays[i].result = Replay::Result::Win;
-            } else {
-                if (color == lose_color || color == (lose_color ^ 2))
-                    replays[i].result = Replay::Result::Lose;
-                else replays[i].result = Replay::Result::Win;
-            }
-        }
+        replays.append(replay);
     }
     if (notification) 
         emit dataChanged(index(0, 0),

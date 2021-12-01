@@ -20,8 +20,20 @@ public:
         Tie
     };
 
+    // 从JGS文件解析出复盘
+    static Replay fromJGSFile(const QString &filePath);
+    // 从缓存的Json数据解析出Replay
+    static Replay fromJson(const QByteArray &json);
+
     // 通过颜色获取色值, 玩家不存在使用灰色
     static QBrush brush(Color c);
+    // 获取对家颜色
+    static Color thatColor(Color c);
+
+    // 复盘数据转换为Json数据用于缓存
+    QByteArray toJson() const;
+
+    bool hasError() const;
 
     // 通过结果获取色值
     QBrush resultBrush() const;
@@ -61,6 +73,7 @@ public:
     QString names[4];
     Result result;
     QString filePath;
+    QString errorString;
 };
 
 #endif // REPLAY_H

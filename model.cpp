@@ -7,11 +7,14 @@
 #include <QTextCodec>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QProgressDialog>
 
 Model::Model(QString path, QObject *parent) 
     : QAbstractTableModel(parent)
 {
-    reload(path, false);
+    QTimer::singleShot(0, this, [this, path]() {
+        reload(path);
+    });
 }
 
 int Model::rowCount(const QModelIndex &) const
@@ -100,22 +103,37 @@ void Model::openReplay(const QModelIndex &index)
                                   replays[index.row()].filePath));
 }
 
-void Model::reload(QString path, bool notification)
+void Model::reload(QString path)
 {
     if (path.isEmpty()) return ;
     QDir dir(path);
     dir.setNameFilters({"*.jgs"});
     dir.setSorting(QDir::Time);
     auto infoList = dir.entryInfoList();
+    auto win = qobject_cast<QWidget*>(parent());
+    QProgressDialog dialog(
+        tr("Parsing files..."),
+        tr("Abort"),
+        0,
+        infoList.size(),
+        win);
+    dialog.setModal(true);
+    dialog.show();
     for (int i = 0; i < infoList.size(); i++) {
+        dialog.setValue(i);
+        dialog.setLabelText(infoList[i].fileName());
         auto replay = Replay::fromJGSFile(infoList[i].absoluteFilePath());
+        QCoreApplication::processEvents();
         if (replay.hasError()) {
             qWarning() << "replay load failed: " << replay.errorString;
             continue;
         }
         replays.append(replay);
+        if (dialog.wasCanceled()) {
+            break;
+        }
     }
-    if (notification) 
-        emit dataChanged(index(0, 0),
-                         index(rowCount() - 1, columnCount() - 1));
+    dialog.setValue(infoList.size());
+    emit dataChanged(index(0, 0),
+                     index(rowCount() - 1, columnCount() - 1));
 }

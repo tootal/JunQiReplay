@@ -7,13 +7,15 @@
 
 #include "replay.h"
 
+class QProgressDialog;
+
 class Model : public QAbstractTableModel
 {
     Q_OBJECT
 public:
     explicit Model(QString path, QObject *parent = nullptr);
     void openReplay(const QModelIndex &index);
-    void reload(QString path, bool notification = true);
+    void reload(QString path);
     
 protected:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

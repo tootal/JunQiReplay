@@ -8,6 +8,8 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QProgressDialog>
+#include <QTimer>
+#include <QCoreApplication>
 
 Model::Model(QString path, QObject *parent) 
     : QAbstractTableModel(parent)

@@ -2,7 +2,10 @@
 
 #include <QMainWindow>
 
+#include "replay.h"
+
 class Model;
+class QAbstractItemModel;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +29,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Model *model;
-    
+    QAbstractItemModel *aModel;
+    QVector<Replay> replays;
     void reload();
+    void setupModel();
 };

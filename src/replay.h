@@ -66,6 +66,8 @@ public:
     QString prevName() const;
     // 获取下家名字
     QString nextName() const;
+    // 结果展示字符串
+    QString resultString() const;
 
     Color color;
     QDateTime time;

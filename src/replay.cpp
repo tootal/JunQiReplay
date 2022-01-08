@@ -211,3 +211,11 @@ QString Replay::nextName() const
 {
     return name(nextColor());
 }
+
+QString Replay::resultString() const
+{
+    if (result == Result::Win) return QObject::tr("Win");
+    else if (result == Result::Tie) return QObject::tr("Tie");
+    else if (result == Result::Lose) return QObject::tr("Lose");
+    return "Unknown";
+}

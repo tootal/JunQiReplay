@@ -11,8 +11,6 @@ set(CMAKE_AUTORCC ON)
 
 # 依赖的Qt模块
 set(QT_COMPONENTS
-    Core
-    Gui
     Widgets
     Core5Compat
 )

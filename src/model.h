@@ -7,8 +7,6 @@
 
 #include "replay.h"
 
-class QProgressDialog;
-
 class Model : public QAbstractTableModel
 {
     Q_OBJECT

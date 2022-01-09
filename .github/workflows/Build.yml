@@ -17,19 +17,21 @@ jobs:
             script: win_build.ps1
             dist-ext: 7z
     steps:
-      - name: Cache Qt
+      - name: Cache Dependences
         id: cache-qt
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
-          path: ../Qt
-          key: ${{ runner.os }}-QtCache622
+          path: ${{ github.workspace }}/dependences
+          key: ${{ runner.os }}-dependences
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: 6.2.2
           target: desktop
           arch: ${{ matrix.arch }}
+          dir: '${{ github.workspace }}/dependences/'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          modules: qt5compat
       - name: Checkout codes
         uses: actions/checkout@v2
         with:

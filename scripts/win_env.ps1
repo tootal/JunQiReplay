@@ -9,10 +9,12 @@ if (-Not (Test-Path env:QT6_DIR)) {
     $QT_VERSION = '6.2.2'
     $QT_PATH = "${QT_BASEDIR}\${QT_VERSION}\${QT_KIT}"
     $Qt6_DIR = "${QT_PATH}\lib\cmake\Qt6"
+    $env:Qt6_DIR = "${Qt6_DIR}"
     $env:PATH = "${QT_PATH}\bin;${env:PATH}"
 }
 
-echo "Detect Qt6_DIR: ${Qt6_DIR}"
+echo "PATH: ${env:PATH}"
+echo "Detect Qt6_DIR: ${env:Qt6_DIR}"
 qmake --version
 
 $VS_BASEDIR = 'C:\Program Files (x86)\Microsoft Visual Studio'

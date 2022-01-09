@@ -21,7 +21,7 @@ jobs:
         id: cache-qt
         uses: actions/cache@v2
         with:
-          path: ${{ github.workspace }}/dependences
+          path: ${{ github.workspace }}\dependences
           key: ${{ runner.os }}-dependences
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -29,7 +29,7 @@ jobs:
           version: 6.2.2
           target: desktop
           arch: ${{ matrix.arch }}
-          dir: '${{ github.workspace }}/dependences/'
+          dir: '${{ github.workspace }}\dependences\'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
           modules: qt5compat
       - name: Checkout codes

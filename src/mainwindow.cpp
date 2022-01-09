@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QMessageBox>
 
 #include "proxy.h"
 
@@ -130,48 +131,52 @@ void MainWindow::reload()
     dialog.setValue(infoList.size());
 }
 
+void MainWindow::setupMenu()
+{
+    action_Open_Folder = new QAction(this);
+    action_About = new QAction(this);
+    action_AboutQt = new QAction(this);
+
+    menubar = new QMenuBar(this);
+    menubar->setGeometry(QRect(0, 0, WINDOW_WIDTH, 26));
+    menu_File = new QMenu(menubar);
+    menu_Help = new QMenu(menubar);
+    this->setMenuBar(menubar);
+    
+    menubar->addMenu(menu_File);
+    menubar->addMenu(menu_Help);
+    menu_File->addAction(action_Open_Folder);
+    menu_Help->addAction(action_About);
+    menu_Help->addAction(action_AboutQt);
+}
+
 void MainWindow::setupUI()
 {
-    const int WINDOW_WIDTH = 1000;
-    const int WINDOW_HEIGHT = 600;
     this->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    QIcon icon;
-    icon.addFile(QString::fromUtf8(":/JunQiReplay.png"), QSize(), QIcon::Normal, QIcon::Off);
-    this->setWindowIcon(icon);
-    action_Open_Folder = new QAction(this);
-    action_Open_Folder->setObjectName(QString::fromUtf8("action_Open_Folder"));
+    this->setWindowIcon(QIcon(":/JunQiReplay.png"));
+    
     centralwidget = new QWidget(this);
-    centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
     verticalLayout = new QVBoxLayout(centralwidget);
     verticalLayout->setSpacing(0);
-    verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     verticalLayout->setContentsMargins(0, 0, 0, 0);
     horizontalLayout = new QHBoxLayout();
     horizontalLayout->setSpacing(0);
-    horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
     lineEdit = new QLineEdit(centralwidget);
-    lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
 
     horizontalLayout->addWidget(lineEdit);
 
     pushButton = new QPushButton(centralwidget);
-    pushButton->setObjectName(QString::fromUtf8("pushButton"));
-    QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/refresh.png"), QSize(), QIcon::Normal, QIcon::Off);
-    pushButton->setIcon(icon1);
+    pushButton->setIcon(QIcon(":/refresh.png"));
 
     horizontalLayout->addWidget(pushButton);
 
     lineEdit_2 = new QLineEdit(centralwidget);
-    lineEdit_2->setObjectName(QString::fromUtf8("lineEdit_2"));
 
     horizontalLayout->addWidget(lineEdit_2);
-
 
     verticalLayout->addLayout(horizontalLayout);
 
     tableView = new QTableView(centralwidget);
-    tableView->setObjectName(QString::fromUtf8("tableView"));
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -182,33 +187,30 @@ void MainWindow::setupUI()
     verticalLayout->addWidget(tableView);
 
     this->setCentralWidget(centralwidget);
-    menubar = new QMenuBar(this);
-    menubar->setObjectName(QString::fromUtf8("menubar"));
-    menubar->setGeometry(QRect(0, 0, WINDOW_WIDTH, 26));
-    menu_File = new QMenu(menubar);
-    menu_File->setObjectName(QString::fromUtf8("menu_File"));
-    this->setMenuBar(menubar);
+    
     statusbar = new QStatusBar(this);
-    statusbar->setObjectName(QString::fromUtf8("statusbar"));
     this->setStatusBar(statusbar);
 
-    menubar->addAction(menu_File->menuAction());
-    menu_File->addAction(action_Open_Folder);
+    setupMenu();
 
     retranslateUi();
 
     connectSlots();
 }
 
-
 void MainWindow::retranslateUi()
 {
-    this->setWindowTitle(QCoreApplication::translate("MainWindow", "JunQiReplay", nullptr));
-    action_Open_Folder->setText(QCoreApplication::translate("MainWindow", "&Open Folder", nullptr));
-    lineEdit->setPlaceholderText(QCoreApplication::translate("MainWindow", "Folder Path", nullptr));
-    pushButton->setText(QString());
-    lineEdit_2->setPlaceholderText(QCoreApplication::translate("MainWindow", "Filter Name", nullptr));
-    menu_File->setTitle(QCoreApplication::translate("MainWindow", "&File", nullptr));
+    auto translate = [](const char *text){
+        return QCoreApplication::translate("MainWindow", text);
+    };
+    this->setWindowTitle(translate("JunQiReplay"));
+    action_Open_Folder->setText(translate("&Open Folder"));
+    action_About->setText(translate("&About"));
+    action_AboutQt->setText(translate("About &Qt"));
+    lineEdit->setPlaceholderText(translate("Folder Path"));
+    lineEdit_2->setPlaceholderText(translate("Filter Name"));
+    menu_File->setTitle(translate("&File"));
+    menu_Help->setTitle(translate("&Help"));
 }
 
 void MainWindow::connectSlots()
@@ -219,6 +221,14 @@ void MainWindow::connectSlots()
             this, &MainWindow::pushButton_clicked);
     connect(lineEdit, &QLineEdit::returnPressed,
             this, &MainWindow::lineEdit_returnPressed);
+    connect(action_About, &QAction::triggered,
+        this, [this]() {
+            QMessageBox::about(this, windowTitle(), tr("An application for QQGame JunQi Replay Manager."));
+        });
+    connect(action_AboutQt, &QAction::triggered,
+        this, [this]() {
+            QMessageBox::aboutQt(this, tr("About Qt"));
+        });
 }
 
 void MainWindow::lineEdit_returnPressed()

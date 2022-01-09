@@ -28,10 +28,15 @@ private slots:
     void lineEdit_returnPressed();
     
 private:
+    int WINDOW_WIDTH = 1000;
+    int WINDOW_HEIGHT = 600;
+
     QAbstractItemModel *aModel;
     QVector<Replay> replays;
 
     QAction *action_Open_Folder;
+    QAction *action_About;
+    QAction *action_AboutQt;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
@@ -41,9 +46,11 @@ private:
     QTableView *tableView;
     QMenuBar *menubar;
     QMenu *menu_File;
+    QMenu *menu_Help;
     QStatusBar *statusbar;
 
     void reload();
+    void setupMenu();
     void setupUI();
     void setupModel();
     void retranslateUi();

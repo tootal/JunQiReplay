@@ -28,7 +28,6 @@ private slots:
     
 private:
     Ui::MainWindow *ui;
-    Model *model;
     QAbstractItemModel *aModel;
     QVector<Replay> replays;
     void reload();

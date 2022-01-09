@@ -9,7 +9,6 @@
 #include <QProgressDialog>
 #include <QDesktopServices>
 
-#include "model.h"
 #include "proxy.h"
 
 MainWindow::MainWindow(QWidget *parent)

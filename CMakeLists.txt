@@ -11,10 +11,12 @@ set(CMAKE_AUTORCC ON)
 
 # 依赖的Qt模块
 set(QT_COMPONENTS
+    Core
     Widgets
     Core5Compat
 )
 find_package(Qt6 COMPONENTS ${QT_COMPONENTS} REQUIRED)
+find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
 
 file(GLOB_RECURSE HEADER_FILES src/*.h)
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
@@ -39,3 +41,8 @@ target_link_libraries(${MODULE_NAME}
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
     PROPERTY 
         VS_STARTUP_PROJECT ${MODULE_NAME})
+
+qt_add_translations(${MODULE_NAME} TS_FILES ${TS_FILES})
+
+execute_process(
+    COMMAND ${LUPDATE_EXECUTABLE} -recursive ${CMAKE_CURRENT_SOURCE_DIR}/src -ts ${TS_FILES})

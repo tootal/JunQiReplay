@@ -1,0 +1,50 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-desktop:
+    name: Build on Desktop
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2019
+            arch: win64_msvc2019_64
+            script: win_build.ps1
+            dist-ext: 7z
+    steps:
+      - name: Cache Qt
+        id: cache-qt
+        uses: actions/cache@v1
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-QtCache622
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: 6.2.2
+          target: desktop
+          arch: ${{ matrix.arch }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: Checkout codes
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: Build Project
+        run: ./scripts/${{ matrix.script }}
+      - name: Update Tag
+        run: |
+          git tag --force continuous-build ${GITHUB_SHA}
+          git push --force --tags
+      - name: Update Continuous Build Release
+        uses: johnwbyrd/update-release@v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./build/win_deploy/JunQiReplay.${{ matrix.dist-ext }}
+          release: Continuous Build
+          tag: continuous-build

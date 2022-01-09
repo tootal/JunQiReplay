@@ -4,5 +4,6 @@
         <file>JunQiReplay.png</file>
         <file>refresh.png</file>
         <file>JunQiReplay_zh_CN.qm</file>
+        <file>MainWindow.qml</file>
     </qresource>
 </RCC>

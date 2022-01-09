@@ -15,6 +15,7 @@ set(CMAKE_AUTORCC ON)
 set(QT_COMPONENTS
     Core
     Widgets
+    Quick
     Core5Compat
 )
 find_package(Qt6 COMPONENTS ${QT_COMPONENTS} REQUIRED)
@@ -31,7 +32,9 @@ target_sources(${MODULE_NAME}
         ${SRC_FILES}
         ${HEADER_FILES}
         ${QRC_FILES}
-        ${TS_FILES})
+        ${TS_FILES}
+        mainwindowviewmodel.h
+        mainwindowviewmodel.cpp)
 
 list(TRANSFORM QT_COMPONENTS PREPEND Qt6::)
 target_link_libraries(${MODULE_NAME}
@@ -52,3 +55,16 @@ qt_add_translations(${MODULE_NAME} TS_FILES ${TS_FILES})
 
 execute_process(
     COMMAND ${LUPDATE_EXECUTABLE} -recursive ${CMAKE_CURRENT_SOURCE_DIR}/src -ts ${TS_FILES})
+
+qt6_add_qml_module(${MODULE_NAME}
+    URI JunQiReplay
+    VERSION 1.0
+    NO_RESOURCE_TARGET_PATH
+)
+
+list(APPEND QML_IMPORT_PATH "${PROJECT_BINARY_DIR}")
+list(REMOVE_DUPLICATES QML_IMPORT_PATH)
+set(QML_IMPORT_PATH ${QML_IMPORT_PATH}
+    CACHE STRING "Qt Creator 4.1 extra qml import paths"
+    FORCE
+)

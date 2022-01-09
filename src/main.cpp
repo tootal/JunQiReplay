@@ -2,12 +2,13 @@
 
 #include <QApplication>
 #include <QTranslator>
+#include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    a.setApplicationName("JunQiReplay");
-    a.setOrganizationName("tootal");
+    QApplication app(argc, argv);
+    app.setApplicationName("JunQiReplay");
+    app.setOrganizationName("tootal");
     QString locale = QLocale::system().name();
     QLocale::setDefault(QLocale(locale));
     QTranslator translator;
@@ -17,8 +18,22 @@ int main(int argc, char *argv[])
             qWarning() << "Translator load failed";
         }
     }
-    a.installTranslator(&translator);
-    MainWindow w;
-    w.show();
-    return a.exec();
+    app.installTranslator(&translator);
+
+    bool qmlApp = false;
+    if (qmlApp) {
+        QQmlApplicationEngine engine;
+        const QUrl url("qrc:/MainWindow.qml");
+        QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                         &app, [url](QObject *obj, const QUrl &objUrl) {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1);
+        }, Qt::QueuedConnection);
+        engine.load(url);
+        return app.exec();
+    } else {
+        MainWindow win;
+        win.show();
+        return app.exec();
+    }
 }

@@ -8,6 +8,8 @@ jobs:
   build-desktop:
     name: Build on Desktop
     runs-on: ${{ matrix.os }}
+    env:
+      QT_VERSION: 6.2.2
     strategy:
       fail-fast: false
       matrix:
@@ -17,19 +19,19 @@ jobs:
             script: win_build.ps1
             dist-ext: 7z
     steps:
-      - name: Cache Dependences
+      - name: Cache Qt
         id: cache-qt
         uses: actions/cache@v2
         with:
-          path: ${{ github.workspace }}\dependences
-          key: ${{ runner.os }}-dependences
+          path: C:\Qt
+          key: ${{ runner.os }}-qt-${{ env.QT_VERSION }}
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 6.2.2
+          version: ${{ env.QT_VERSION }}
           target: desktop
           arch: ${{ matrix.arch }}
-          dir: '${{ github.workspace }}\dependences\'
+          dir: C:\
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
           modules: qt5compat
       - name: Checkout codes

@@ -3,16 +3,13 @@ $WORK_DIR = Split-Path -Parent ${FILE_DIR}
 Push-Location -Path ${WORK_DIR}
 echo 'Setting up environment...'
 
-
 if (-Not (Test-Path env:QT6_DIR)) {
     $env:QT6_DIR = 'C:\Qt\6.2.2\msvc2019_64'
+    $env:PATH = "${env:QT6_DIR}\bin;${env:PATH}"
 }
-$env:PATH = "${env:QT6_DIR}\bin;${env:PATH}"
 
-echo "PATH: ${env:PATH}"
 echo "Detect Qt6_DIR: ${env:Qt6_DIR}"
-Get-ChildItem "${env:Qt6_DIR}\bin"
-# qmake --version
+qmake --version
 
 $VS_BASEDIR = 'C:\Program Files (x86)\Microsoft Visual Studio\2019'
 $VS_TYPE = 'Enterprise'

@@ -9,7 +9,6 @@ set(CMAKE_PROJECT_AUTHOR "${PROJECT_AUTHOR}")
 set(MODULE_NAME ${CMAKE_PROJECT_NAME})
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # 依赖的Qt模块
@@ -25,7 +24,6 @@ file(GLOB_RECURSE HEADER_FILES src/*.h)
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 file(GLOB_RECURSE QRC_FILES res/*.qrc)
 file(GLOB_RECURSE TS_FILES res/*.ts)
-file(GLOB_RECURSE UI_FILES src/*.ui)
 
 add_executable(${MODULE_NAME} WIN32)
 target_sources(${MODULE_NAME}
@@ -33,7 +31,6 @@ target_sources(${MODULE_NAME}
         ${SRC_FILES}
         ${HEADER_FILES}
         ${QRC_FILES}
-        ${UI_FILES}
         ${TS_FILES})
 
 list(TRANSFORM QT_COMPONENTS PREPEND Qt6::)

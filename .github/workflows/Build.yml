@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: C:\Qt
-          key: ${{ runner.os }}-qt-${{ env.QT_VERSION }}
+          key: ${{ runner.os }}-Qt-${{ env.QT_VERSION }}
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:

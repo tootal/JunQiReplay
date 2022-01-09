@@ -6,10 +6,11 @@
 
 class Model;
 class QAbstractItemModel;
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+class QVBoxLayout;
+class QHBoxLayout;
+class QLineEdit;
+class QPushButton;
+class QTableView;
 
 class MainWindow : public QMainWindow
 {
@@ -20,16 +21,31 @@ public:
     ~MainWindow();
     
 private slots:
-    void on_action_Open_Folder_triggered();
+    void action_Open_Folder_triggered();
     
-    void on_pushButton_clicked();
+    void pushButton_clicked();
     
-    void on_lineEdit_returnPressed();
+    void lineEdit_returnPressed();
     
 private:
-    Ui::MainWindow *ui;
     QAbstractItemModel *aModel;
     QVector<Replay> replays;
+
+    QAction *action_Open_Folder;
+    QWidget *centralwidget;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
+    QLineEdit *lineEdit;
+    QPushButton *pushButton;
+    QLineEdit *lineEdit_2;
+    QTableView *tableView;
+    QMenuBar *menubar;
+    QMenu *menu_File;
+    QStatusBar *statusbar;
+
     void reload();
+    void setupUI();
     void setupModel();
+    void retranslateUi();
+    void connectSlots();
 };

@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(JunQiReplay 
-    VERSION 0.1.0
+    VERSION 0.1.0.0
+    DESCRIPTION "An application for QQGame JunQi Replay Manager."
     LANGUAGES C CXX)
+set(PROJECT_AUTHOR "tootal")
+set(CMAKE_PROJECT_AUTHOR "${PROJECT_AUTHOR}")
 set(MODULE_NAME ${CMAKE_PROJECT_NAME})
 
 set(CMAKE_AUTOMOC ON)
@@ -41,6 +44,12 @@ target_link_libraries(${MODULE_NAME}
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
     PROPERTY 
         VS_STARTUP_PROJECT ${MODULE_NAME})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/res/${MODULE_NAME}.rc.in 
+    ${PROJECT_BINARY_DIR}/${MODULE_NAME}.rc)
+target_sources(${MODULE_NAME}
+    PRIVATE 
+        ${PROJECT_BINARY_DIR}/${MODULE_NAME}.rc)
 
 qt_add_translations(${MODULE_NAME} TS_FILES ${TS_FILES})
 

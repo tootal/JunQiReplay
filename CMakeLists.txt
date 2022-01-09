@@ -59,6 +59,9 @@ execute_process(
 qt6_add_qml_module(${MODULE_NAME}
     URI JunQiReplay
     VERSION 1.0
+    QML_FILES
+        qml/AboutDialog.qml
+        qml/AboutDialogIcon.qml
     NO_RESOURCE_TARGET_PATH
 )
 

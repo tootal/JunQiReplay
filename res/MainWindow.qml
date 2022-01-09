@@ -49,12 +49,19 @@ ApplicationWindow {
         folder: Platform.StandardPaths.standardLocations(Platform.StandardPaths.PicturesLocation)[0]
     }
 
-    Platform.MessageDialog {
+    AboutDialog {
         id: aboutDialog
+        text: qsTr("An application for QQGame JunQi Replay Manager.")
     }
 
-    Platform.MessageDialog {
+    AboutDialog {
         id: aboutQtDialog
+        icon {
+            source: "qrc:/qt-logo.svg"
+            width: 60
+            height: 44
+        }
+        text: qsTr("This program uses Qt version %1. \nQt is a C++ toolkit for cross-platform application development.").arg(viewModel.qtVersion)
     }
 
     ColumnLayout {

@@ -8,6 +8,7 @@ class MainWindowViewModel : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString userName READ userName WRITE setUserName NOTIFY userNameChanged)
+    Q_PROPERTY(QString qtVersion READ qtVersion CONSTANT)
     QML_ELEMENT
 
 public:
@@ -15,6 +16,8 @@ public:
 
     QString userName();
     void setUserName(const QString &userName);
+
+    QString qtVersion() const;
 
 signals:
     void userNameChanged();

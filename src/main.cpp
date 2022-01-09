@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("JunQiReplay");
     app.setOrganizationName("tootal");
+    app.setWindowIcon(QIcon(":/JunQiReplay.png"));
     QString locale = QLocale::system().name();
     QLocale::setDefault(QLocale(locale));
     QTranslator translator;

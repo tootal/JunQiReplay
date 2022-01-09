@@ -19,3 +19,8 @@ void MainWindowViewModel::setUserName(const QString &userName)
     m_userName = userName;
     emit userNameChanged();
 }
+
+QString MainWindowViewModel::qtVersion() const
+{
+    return qVersion();
+}

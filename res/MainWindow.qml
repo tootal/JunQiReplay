@@ -92,27 +92,9 @@ ApplicationWindow {
             columnSpacing: 1
             rowSpacing: 1
             clip: true
+            boundsBehavior: Flickable.StopAtBounds
 
-            model: TableModel {
-                TableModelColumn { display: "name" }
-                TableModelColumn { display: "color" }
-
-                rows: [
-                    {
-                        "name": "cat",
-                        "color": "black"
-                    },
-                    {
-                        "name": "dog",
-                        "color": "brown"
-                    },
-                    {
-                        "name": "bird",
-                        "color": "white"
-                    }
-                ]
-            }
-
+            model: ReplayTableModel {}
             delegate: Rectangle {
                 implicitWidth: 100
                 implicitHeight: 50

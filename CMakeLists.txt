@@ -34,7 +34,9 @@ target_sources(${MODULE_NAME}
         ${QRC_FILES}
         ${TS_FILES}
         mainwindowviewmodel.h
-        mainwindowviewmodel.cpp)
+        mainwindowviewmodel.cpp
+        replaytablemodel.h
+        replaytablemodel.cpp)
 
 list(TRANSFORM QT_COMPONENTS PREPEND Qt6::)
 target_link_libraries(${MODULE_NAME}

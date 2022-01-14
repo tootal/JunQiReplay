@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     }
     app.installTranslator(&translator);
 
-    bool qmlApp = false;
+    bool qmlApp = true;
     if (qmlApp) {
         QQmlApplicationEngine engine;
         const QUrl url("qrc:/MainWindow.qml");

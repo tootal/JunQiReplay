@@ -122,7 +122,9 @@ ApplicationWindow {
             clip: true
             boundsBehavior: Flickable.StopAtBounds
 
-            model: ReplayTableModel {}
+            model: ReplayTableModel {
+                jgsFileList: "C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_19_22_0.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_1_23_0最后决胜步.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_10_30_0_19.jgs"
+            }
             delegate: tableDelegate
             columnWidthProvider: function (column) {
                 switch (column) {

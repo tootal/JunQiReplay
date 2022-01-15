@@ -7,11 +7,13 @@
 ReplayTableModel::ReplayTableModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
-    QString jgsStr = "C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_19_22_0.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_1_23_0最后决胜步.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_10_30_0_19.jgs";
-    QStringList jgsFile = jgsStr.split(';');
-    for (int i = 0; i < jgsFile.size(); i++) {
-        m_replays.append(Replay::fromJGSFile(jgsFile[i]));
-    }
+    connect(this, &ReplayTableModel::jgsFileListChanged,
+            this, [this]() {
+        QStringList jgsFile = m_jgsFileList.split(';');
+        for (int i = 0; i < jgsFile.size(); i++) {
+            m_replays.append(Replay::fromJGSFile(jgsFile[i]));
+        }
+    });
 }
 
 int ReplayTableModel::rowCount(const QModelIndex &) const

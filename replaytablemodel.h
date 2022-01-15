@@ -9,6 +9,7 @@
 class ReplayTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+    Q_PROPERTY(QString jgsFileList MEMBER m_jgsFileList NOTIFY jgsFileListChanged)
     QML_ELEMENT
 
 public:
@@ -21,8 +22,12 @@ public:
 
     void append(const Replay &replay);
 
+signals:
+    void jgsFileListChanged(QString newJgsFileList);
+
 private:
     QVector<Replay> m_replays;
+    QString m_jgsFileList;
 };
 
 #endif // REPLAYTABLEMODEL_H

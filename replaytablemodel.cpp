@@ -1,16 +1,22 @@
 #include "replaytablemodel.h"
 
-#include "src/junqi.h"
+#include <QColor>
+#include <QFont>
+#include <QGuiApplication>
 
 ReplayTableModel::ReplayTableModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
-
+    QString jgsStr = "C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_19_22_0.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_1_23_0最后决胜步.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_10_30_0_19.jgs";
+    QStringList jgsFile = jgsStr.split(';');
+    for (int i = 0; i < jgsFile.size(); i++) {
+        m_replays.append(Replay::fromJGSFile(jgsFile[i]));
+    }
 }
 
 int ReplayTableModel::rowCount(const QModelIndex &) const
 {
-    return 3;
+    return static_cast<int>(m_replays.size());
 }
 
 int ReplayTableModel::columnCount(const QModelIndex &) const
@@ -20,38 +26,71 @@ int ReplayTableModel::columnCount(const QModelIndex &) const
 
 QVariant ReplayTableModel::data(const QModelIndex &index, int role) const
 {
+    const int row = index.row(), col = index.column();
+    const auto replay = m_replays[row];
+    if (role == Qt::ForegroundRole) {
+        if (col >= 2 && col <= 5) {
+            return QColor(Qt::white);
+        } else if (col == 7) {
+            return replay.resultColor();
+        }
+    }
     if (role == Qt::BackgroundRole) {
-        if (index.column() >= 2 && index.column() <= 5) {
-            QVector<QColor> colorList{JunQi::orange, JunQi::green, JunQi::blue, JunQi::purple};
-            return colorList.at(index.column() - 2);
+        if (col >= 2 && col <= 5) {
+            QVector<QColor> colorList{
+                replay.thisColor(),
+                replay.thatColor(),
+                replay.prevColor(),
+                replay.nextColor()
+            };
+            return colorList[col - 2];
         } else {
             return QVariant();
         }
     } else if (role == Qt::DisplayRole) {
-        QVector<QStringList> dataList{
-            {"1", "2021/11.19 22:00:49", "游 戏 玩 家", ".", "觅思方向", "游戏玩家", "302", "Tie"},
-            {"2", "2021/11.01 23:00:58", "游 戏 玩 家", ".", "醉美德阳", "欧阳亦儒", "408", "Win"},
-            {"3", "2021/10.30 00:19:42", ".", "沐尘", "专属回忆", "钢化", "263", "Lose"}
+        QStringList dataList{
+            QString::number(row + 1),
+            replay.time.toString("yyyy/MM/dd hh:mm:ss"),
+            replay.thisName(),
+            replay.thatName(),
+            replay.prevName(),
+            replay.nextName(),
+            QString::number(replay.steps),
+            replay.resultString()
         };
-        return dataList.at(index.row()).at(index.column());
-    } else {
-        return QVariant();
+        return dataList[col];
+    } else if (role == Qt::FontRole) {
+        return QFont("Microsoft YaHei", 14);
     }
+
+    return QVariant();
 }
 
 QVariant ReplayTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+    if (orientation != Qt::Horizontal) {
         return QVariant();
     }
-    QStringList dataList{"#", "Time", "This", "That", "Prev", "Next", "Step", "Result"};
-    return dataList.at(section);
+    if (role == Qt::DisplayRole) {
+        QStringList dataList{"#", "Time", "This", "That", "Prev", "Next", "Step", "Result"};
+        return dataList.at(section);
+    } else if (role == Qt::FontRole) {
+        return QFont("Microsoft YaHei", 14, QFont::DemiBold);
+    }
+    return QVariant();
 }
 
 QHash<int, QByteArray> ReplayTableModel::roleNames() const
 {
     return {
         { Qt::DisplayRole, "display" },
-        { Qt::BackgroundRole, "background" }
+        { Qt::BackgroundRole, "background" },
+        { Qt::ForegroundRole, "foreground" },
+        { Qt::FontRole, "theFont" }
     };
+}
+
+void ReplayTableModel::append(const Replay &replay)
+{
+    m_replays.append(replay);
 }

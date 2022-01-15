@@ -92,13 +92,16 @@ ApplicationWindow {
             id: tableDelegate
             Rectangle {
                 implicitWidth: 100
-                implicitHeight: 50
+                implicitHeight: 30
                 border.width: 1
+                border.color: "lightgray"
                 color: background ?? "white"
 
                 Text {
                     text: display ?? ""
+                    color: foreground ?? "black"
                     anchors.centerIn: parent
+                    font: theFont ?? Application.font
                 }
             }
 
@@ -126,7 +129,7 @@ ApplicationWindow {
                 case 0:
                     return 30;
                 case 1:
-                    return 150;
+                    return 200;
                 default:
                     return -1;
                 }

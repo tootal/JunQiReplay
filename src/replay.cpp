@@ -9,6 +9,13 @@
 
 #include "junqi.h"
 
+Replay::Role Replay::fromJGSRole(quint8 role)
+{
+    int roleCount = static_cast<int>(Role::Count);
+    int roleMap = (roleCount - role) % roleCount;
+    return static_cast<Replay::Role>(roleMap);
+}
+
 Replay Replay::fromJGSFile(const QString &filePath)
 {
     Replay replay;
@@ -27,7 +34,7 @@ Replay Replay::fromJGSFile(const QString &filePath)
         bytes = file.readAll();
     }
 
-    replay.color = static_cast<Replay::Color>(bytes[0x0f]);
+    replay.role = fromJGSRole(bytes[0x0f]);
     replay.steps = (quint8)bytes[0x1b] * 0x100 + (quint8)bytes[0x1a];
 
     int pos = 0x20;
@@ -36,7 +43,11 @@ Replay Replay::fromJGSFile(const QString &filePath)
         int color = (quint8)bytes[pos];
         if (color != 0xff) {
             type++;
-            auto name = bytes.mid(pos + 8, 20);
+            int len = 20;
+            while (static_cast<quint8>(bytes[pos + 8 + len - 1]) == 0) {
+                len--;
+            }
+            auto name = bytes.mid(pos + 8, len);
             replay.names[color] = QTextCodec::codecForName("GBK")->toUnicode(name);
         }
         pos += 88;
@@ -44,12 +55,12 @@ Replay Replay::fromJGSFile(const QString &filePath)
     int flag = static_cast<quint8>(bytes[0x19c + 10 * (replay.steps - 1) + 3]);
     if (flag == 2) replay.result = Replay::Result::Tie;
     else {
-        Color lose_color = static_cast<Color>(bytes[0x19c + 10 * (replay.steps - 2) + 2]);
+        Role loseRole = fromJGSRole(bytes[0x19c + 10 * (replay.steps - 2) + 2]);
         if (type == 2) {
-            if (replay.color == lose_color) replay.result = Replay::Result::Lose;
+            if (replay.role == loseRole) replay.result = Replay::Result::Lose;
             else replay.result = Replay::Result::Win;
         } else {
-            if (replay.color == lose_color || replay.color == thatColor(lose_color))
+            if (replay.role == loseRole || replay.role == thatRole(loseRole))
                 replay.result = Replay::Result::Lose;
             else replay.result = Replay::Result::Win;
         }
@@ -66,7 +77,7 @@ Replay Replay::fromJson(const QByteArray &json)
         return replay;
     }
     replay.filePath = obj.value("filePath").toString();
-    replay.color = static_cast<Color>(obj.value("color").toInt());
+    replay.role = static_cast<Role>(obj.value("role").toInt());
     replay.time = QDateTime::fromMSecsSinceEpoch(
                     obj.value("time").toVariant().toULongLong());
     replay.steps = obj.value("steps").toInt();
@@ -84,25 +95,25 @@ Replay Replay::fromJson(const QByteArray &json)
     return replay;
 }
 
-QBrush Replay::brush(Color c)
+QColor Replay::colorFrom(Role c)
 {
     switch (c) {
-    case Color::Yellow:
+    case Role::Orange:
         return JunQi::orange;
-    case Color::Blue:
+    case Role::Blue:
         return JunQi::blue;
-    case Color::Green:
+    case Role::Green:
         return JunQi::green;
-    case Color::Purple:
+    case Role::Purple:
         return JunQi::purple;
     default:
-        return QBrush();
+        return QColor();
     }
 }
 
-Replay::Color Replay::thatColor(Color c)
+Replay::Role Replay::thatRole(Role c)
 {
-    return static_cast<Color>(
+    return static_cast<Role>(
                 static_cast<int>(c) ^ 2);
 }
 
@@ -110,7 +121,7 @@ QByteArray Replay::toJson() const
 {
     QJsonObject obj;
     obj.insert("filePath", filePath);
-    obj.insert("color", static_cast<int>(color));
+    obj.insert("role", static_cast<int>(role));
     obj.insert("time", time.toMSecsSinceEpoch());
     obj.insert("steps", steps);
     {
@@ -129,7 +140,7 @@ bool Replay::hasError() const
     return !errorString.isEmpty();
 }
 
-QBrush Replay::resultBrush() const
+QColor Replay::resultColor() const
 {
     switch (result) {
     case Result::Win:
@@ -143,75 +154,100 @@ QBrush Replay::resultBrush() const
     }
 }
 
-QBrush Replay::thisBrush() const
+QBrush Replay::resultBrush() const
+{
+    return resultColor();
+}
+
+QColor Replay::thisColor() const
 {
     if (thisName().isEmpty()) return QColor(Qt::gray);
-    else return brush(thisColor());
+    else return colorFrom(thisRole());
+}
+
+QBrush Replay::thisBrush() const
+{
+    return thisColor();
+}
+
+QColor Replay::thatColor() const
+{
+    if (thatName().isEmpty()) return QColor(Qt::gray);
+    else return colorFrom(thatRole());
 }
 
 QBrush Replay::thatBrush() const
 {
-    if (thatName().isEmpty()) return QColor(Qt::gray);
-    else return brush(thatColor());
+    return thatColor();
+}
+
+QColor Replay::prevColor() const
+{
+    if (prevName().isEmpty()) return QColor(Qt::gray);
+    else return colorFrom(prevRole());
 }
 
 QBrush Replay::prevBrush() const
 {
-    if (prevName().isEmpty()) return QColor(Qt::gray);
-    else return brush(prevColor());
+    return prevColor();
+}
+
+QColor Replay::nextColor() const
+{
+    if (nextName().isEmpty()) return QColor(Qt::gray);
+    else return colorFrom(nextRole());
 }
 
 QBrush Replay::nextBrush() const
 {
-    if (nextName().isEmpty()) return QColor(Qt::gray);
-    else return brush(nextColor());
+    return nextColor();
 }
 
-Replay::Color Replay::thisColor() const
+Replay::Role Replay::thisRole() const
 {
-    return color;
+    return role;
 }
 
-Replay::Color Replay::thatColor() const
+Replay::Role Replay::thatRole() const
 {
-    return thatColor(color);
+    return thatRole(role);
 }
 
-Replay::Color Replay::prevColor() const
+Replay::Role Replay::prevRole() const
 {
-    return static_cast<Color>(
-        (static_cast<int>(color) + 1) % 4);
+    return static_cast<Role>(
+        (static_cast<int>(role) + 1) % static_cast<int>(Role::Count));
 }
 
-Replay::Color Replay::nextColor() const
+Replay::Role Replay::nextRole() const
 {
-    return static_cast<Color>(
-                (static_cast<int>(color) + 3) % 4);
+    return static_cast<Role>(
+                (static_cast<int>(role) + 3) % 4);
 }
 
-QString Replay::name(Color c) const
+QString Replay::name(Role c) const
 {
     return names[static_cast<int>(c)];
 }
 
 QString Replay::thisName() const
 {
-    return name(color);
+    return name(role);
 }
 
 QString Replay::thatName() const
 {
-    return name(thatColor());
+    return name(thatRole());
 }
 
 QString Replay::prevName() const
 {
-    return name(prevColor());
+    return name(prevRole());
 }
 
 QString Replay::nextName() const
 {
-    return name(nextColor());
+    return name(nextRole());
 }
 
 QString Replay::resultString() const

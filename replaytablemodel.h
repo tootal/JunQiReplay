@@ -4,6 +4,8 @@
 #include <QAbstractTableModel>
 #include <QQmlEngine>
 
+#include "src/replay.h"
+
 class ReplayTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -16,6 +18,11 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
+
+    void append(const Replay &replay);
+
+private:
+    QVector<Replay> m_replays;
 };
 
 #endif // REPLAYTABLEMODEL_H

@@ -66,8 +66,10 @@ ApplicationWindow {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
         RowLayout {
+            spacing: 0
             TextField {
                 placeholderText: qsTr("Folder Path")
                 Layout.fillWidth: true
@@ -86,26 +88,49 @@ ApplicationWindow {
             }
         }
 
+        Component {
+            id: tableDelegate
+            Rectangle {
+                implicitWidth: 100
+                implicitHeight: 50
+                border.width: 1
+                color: background ?? "white"
+
+                Text {
+                    text: display ?? ""
+                    anchors.centerIn: parent
+                }
+            }
+
+        }
+
+        HorizontalHeaderView {
+            syncView: tableView
+            boundsBehavior: Flickable.StopAtBounds
+            delegate: tableDelegate
+        }
+
         TableView {
+            id: tableView
             Layout.preferredHeight: 800
             Layout.preferredWidth: 900
-            columnSpacing: 1
-            rowSpacing: 1
+            columnSpacing: 0
+            rowSpacing: 0
             clip: true
             boundsBehavior: Flickable.StopAtBounds
 
             model: ReplayTableModel {}
-            delegate: Rectangle {
-                implicitWidth: 100
-                implicitHeight: 50
-                border.width: 1
-
-                Text {
-                    text: display
-                    anchors.centerIn: parent
+            delegate: tableDelegate
+            columnWidthProvider: function (column) {
+                switch (column) {
+                case 0:
+                    return 30;
+                case 1:
+                    return 150;
+                default:
+                    return -1;
                 }
             }
         }
-
     }
 }

@@ -7,6 +7,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include "junqi.h"
+
 Replay Replay::fromJGSFile(const QString &filePath)
 {
     Replay replay;
@@ -86,13 +88,13 @@ QBrush Replay::brush(Color c)
 {
     switch (c) {
     case Color::Yellow:
-        return QColor(216, 108, 0);
+        return JunQi::orange;
     case Color::Blue:
-        return QColor(40, 104, 160);
+        return JunQi::blue;
     case Color::Green:
-        return QColor(115, 158, 5);
+        return JunQi::green;
     case Color::Purple:
-        return QColor(144, 68, 160);
+        return JunQi::purple;
     default:
         return QBrush();
     }

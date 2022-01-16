@@ -10,6 +10,7 @@ class ReplayTableModel : public QAbstractTableModel
 {
     Q_OBJECT
     Q_PROPERTY(QString jgsFileList MEMBER m_jgsFileList NOTIFY jgsFileListChanged)
+    Q_PROPERTY(QQmlListProperty<QString> jgsFiles READ jgsFiles)
     QML_ELEMENT
 
 public:
@@ -22,12 +23,28 @@ public:
 
     void append(const Replay &replay);
 
+    QQmlListProperty<QString> jgsFiles();
+    void appendJgsFile(QString *);
+    qsizetype jgsFileCount() const;
+    QString *jgsFile(qsizetype) const;
+    void clearJgsFiles();
+    void replaceJgsFile(qsizetype, QString *);
+    void removeLastJgsFile();
+
 signals:
     void jgsFileListChanged(QString newJgsFileList);
 
 private:
+    static void appendJgsFile(QQmlListProperty<QString> *, QString *);
+    static qsizetype jgsFileCount(QQmlListProperty<QString> *);
+    static QString* jgsFile(QQmlListProperty<QString> *, qsizetype);
+    static void clearJgsFiles(QQmlListProperty<QString> *);
+    static void replaceJgsFile(QQmlListProperty<QString> *, qsizetype, QString *);
+    static void removeLastJgsFile(QQmlListProperty<QString> *);
+
     QVector<Replay> m_replays;
     QString m_jgsFileList;
+    QVector<QString *> m_jgsFiles;
 };
 
 #endif // REPLAYTABLEMODEL_H

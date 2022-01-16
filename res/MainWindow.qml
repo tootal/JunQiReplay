@@ -10,6 +10,11 @@ ApplicationWindow {
     id: window
     width: 1000
     height: 600
+    minimumHeight: height
+    maximumHeight: height
+    minimumWidth: width
+    maximumWidth: width
+
     visible: true
     title: qsTr("JunQiReplay")
 
@@ -64,50 +69,60 @@ ApplicationWindow {
         text: qsTr("This program uses Qt version %1. \nQt is a C++ toolkit for cross-platform application development.").arg(viewModel.qtVersion)
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
+    Component {
+        id: tableDelegate
+        Rectangle {
+            implicitWidth: 180
+            implicitHeight: 30
+            border.width: 1
+            border.color: "lightgray"
+            color: background ?? "white"
 
-        RowLayout {
-            spacing: 0
+            Text {
+                text: display ?? ""
+                color: foreground ?? "black"
+                anchors.centerIn: parent
+                font: theFont ?? Application.font
+            }
+        }
+
+    }
+
+    Item {
+        anchors.fill: parent
+
+        Row {
+            id: operateRow
+            width: parent.width
+            height: 20
+
             TextField {
+                width: (parent.width - parent.height) / 2
+                height: parent.height
                 placeholderText: qsTr("Folder Path")
-                Layout.fillWidth: true
-                Layout.preferredHeight: 30
-                Layout.preferredWidth: 80
             }
 
             Button {
+                width: parent.height
+                height: parent.height
                 icon.source: "qrc:/refresh.png"
             }
+
             TextField {
+                width: (parent.width - parent.height) / 2
+                height: parent.height
                 placeholderText: qsTr("Filter Name")
-                Layout.fillWidth: true
-                Layout.preferredHeight: 30
-                Layout.preferredWidth: 80
             }
-        }
-
-        Component {
-            id: tableDelegate
-            Rectangle {
-                implicitWidth: 100
-                implicitHeight: 30
-                border.width: 1
-                border.color: "lightgray"
-                color: background ?? "white"
-
-                Text {
-                    text: display ?? ""
-                    color: foreground ?? "black"
-                    anchors.centerIn: parent
-                    font: theFont ?? Application.font
-                }
-            }
-
         }
 
         HorizontalHeaderView {
+            id: tableHeader
+            anchors {
+                top: operateRow.bottom
+                left: parent.left
+                right: parent.right
+            }
+
             syncView: tableView
             boundsBehavior: Flickable.StopAtBounds
             delegate: tableDelegate
@@ -115,15 +130,22 @@ ApplicationWindow {
 
         TableView {
             id: tableView
-            Layout.preferredHeight: 800
-            Layout.preferredWidth: 900
+            anchors {
+                top: tableHeader.bottom
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
+
             columnSpacing: 0
             rowSpacing: 0
             clip: true
             boundsBehavior: Flickable.StopAtBounds
 
+            ScrollBar.vertical: ScrollBar {}
+
             model: ReplayTableModel {
-                jgsFileList: "C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_19_22_0.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_11_1_23_0最后决胜步.jgs;C:\\Users\\tootal\\workspace\\JunQiReplay\\test\\junqi2021_10_30_0_19.jgs"
+                dirName: "C:\\Users\\tootal\\workspace\\JunQiReplay\\test"
             }
             delegate: tableDelegate
             columnWidthProvider: function (column) {
@@ -131,7 +153,11 @@ ApplicationWindow {
                 case 0:
                     return 30;
                 case 1:
-                    return 200;
+                    return 140;
+                case 6:
+                    return 40;
+                case 7:
+                    return 70;
                 default:
                     return -1;
                 }

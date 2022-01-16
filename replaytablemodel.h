@@ -9,8 +9,7 @@
 class ReplayTableModel : public QAbstractTableModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString jgsFileList MEMBER m_jgsFileList NOTIFY jgsFileListChanged)
-    Q_PROPERTY(QQmlListProperty<QString> jgsFiles READ jgsFiles)
+    Q_PROPERTY(QString dirName READ dirName WRITE setDirName NOTIFY dirNameChanged)
     QML_ELEMENT
 
 public:
@@ -21,17 +20,15 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    void append(const Replay &replay);
-
-    QQmlListProperty<QString> jgsFiles();
+    QString dirName() const;
+    void setDirName(const QString &dirName);
 
 signals:
-    void jgsFileListChanged(QString newJgsFileList);
+    void dirNameChanged();
 
 private:
     QList<Replay> m_replays;
-    QString m_jgsFileList;
-    QList<QString *> m_jgsFiles;
+    QString m_dirName;
 };
 
 #endif // REPLAYTABLEMODEL_H

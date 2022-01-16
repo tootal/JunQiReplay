@@ -2,27 +2,27 @@
 
 #include <QColor>
 #include <QFont>
+#include <QDir>
 #include <QGuiApplication>
 
 ReplayTableModel::ReplayTableModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
-    connect(this, &ReplayTableModel::jgsFileListChanged,
-            this, [this]() {
-        QStringList jgsFile = m_jgsFileList.split(';');
-        for (int i = 0; i < jgsFile.size(); i++) {
-            m_replays.append(Replay::fromJGSFile(jgsFile[i]));
-        }
-    });
 }
 
-int ReplayTableModel::rowCount(const QModelIndex &) const
+int ReplayTableModel::rowCount(const QModelIndex &parent) const
 {
+    if (parent.isValid()) {
+        return 0;
+    }
     return static_cast<int>(m_replays.size());
 }
 
-int ReplayTableModel::columnCount(const QModelIndex &) const
+int ReplayTableModel::columnCount(const QModelIndex &parent) const
 {
+    if (parent.isValid()) {
+        return 0;
+    }
     return 8;
 }
 
@@ -62,7 +62,8 @@ QVariant ReplayTableModel::data(const QModelIndex &index, int role) const
         };
         return dataList[col];
     } else if (role == Qt::FontRole) {
-        return QFont("Microsoft YaHei", 14);
+//        return QGuiApplication::font();
+        return QFont("Microsoft YaHei", 10);
     }
 
     return QVariant();
@@ -92,12 +93,32 @@ QHash<int, QByteArray> ReplayTableModel::roleNames() const
     };
 }
 
-void ReplayTableModel::append(const Replay &replay)
+QString ReplayTableModel::dirName() const
 {
-    m_replays.append(replay);
+    return m_dirName;
 }
 
-QQmlListProperty<QString> ReplayTableModel::jgsFiles()
+void ReplayTableModel::setDirName(const QString &dirName)
 {
-    return { this, &m_jgsFiles };
+    qDebug() << "setDirName: " << dirName;
+    if (m_dirName == dirName) {
+        return ;
+    }
+    beginResetModel();
+    m_dirName = dirName;
+    QDir dir(dirName);
+    if (!dir.exists()) return ;
+    dir.setNameFilters({"*.jgs"});
+    dir.setSorting(QDir::Time);
+    auto infoList = dir.entryInfoList();
+    // TODO ProgressDialog
+    for (int i = 0; i < infoList.size(); i++) {
+        auto replay = Replay::fromJGSFile(infoList[i].absoluteFilePath());
+        if (replay.hasError()) {
+            qWarning() << "replay load failed: " << replay.errorString;
+            continue;
+        }
+        m_replays.append(replay);
+    }
+    endResetModel();
 }
